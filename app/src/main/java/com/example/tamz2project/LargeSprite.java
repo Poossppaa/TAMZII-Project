@@ -4,11 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
-import java.util.Random;
-
-public class Sprite {
-    private static final int BMP_ROWS = 1;
-    private static final int BMP_COLUMNS = 2;
+public class LargeSprite extends Sprite {
     private static final int MAX_SPEED = 5;
     private int x = 0;
     private int y = 0;
@@ -19,12 +15,13 @@ public class Sprite {
     private int width;
     private int height;
 
-    // constructor enemies
-    public Sprite(GameView gameView, Bitmap bmp, int initialX, int initialY) {
+    public LargeSprite(GameView gameView, Bitmap bmp, int initialX, int initialY) {
+        super(gameView, bmp, initialX, initialY);
+
         this.gameView = gameView;
         this.bmp = bmp;
-        this.width = bmp.getWidth() / BMP_COLUMNS;
-        this.height = bmp.getHeight() / BMP_ROWS;
+        this.width = bmp.getWidth();
+        this.height = bmp.getHeight();
         this.x = initialX;
         this.y = initialY;
     }
@@ -38,24 +35,22 @@ public class Sprite {
             xSpeed = 5;
         }
         x = x + xSpeed;
-        currentFrame = ++currentFrame % BMP_COLUMNS;
+        currentFrame = ++currentFrame;
     }
 
     //updates game board
     public void onDraw(Canvas canvas) {
         update();
-        int srcX = currentFrame * width;
-        int srcY = 0;
 
-        int right = srcX + width;
-        int bottom = srcY + height;
-
-        Rect src = new Rect(srcX, srcY, right, bottom);
+        // one frame, no need for animation update
+        Rect src = new Rect(0, 0, width, height);
         Rect dst = new Rect(x, y, x + width, y + height);
+
         canvas.drawBitmap(bmp, src, dst, null);
     }
 
     public boolean isCollision(float x2, float y2) {
         return x2 > x && x2 < x + width && y2 > y && y2 < y + height;
     }
+
 }

@@ -12,8 +12,6 @@ public class GameLoopThread extends Thread {
         this.view = view;
     }
 
-
-
     public void setRunning(boolean run) {
         running = run;
     }
