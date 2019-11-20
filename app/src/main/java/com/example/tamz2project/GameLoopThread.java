@@ -1,4 +1,5 @@
 package com.example.tamz2project;
+import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 
 public class GameLoopThread extends Thread {
@@ -17,6 +18,7 @@ public class GameLoopThread extends Thread {
         running = run;
     }
 
+    @SuppressLint("WrongCall")
     @Override
     public void run() {
 
@@ -34,7 +36,7 @@ public class GameLoopThread extends Thread {
                 c = view.getHolder().lockCanvas();
                 synchronized (view.getHolder())
                 {
-                    view.draw(c);
+                    view.onDraw(c);
                 }
             }
             finally
