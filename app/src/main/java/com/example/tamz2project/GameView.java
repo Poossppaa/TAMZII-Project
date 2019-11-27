@@ -57,7 +57,7 @@ public class GameView extends SurfaceView {
     }
 
     private void createGameObjects(int xOffset, int yOffset){
-        player = new Player(this,getResources(),0,800,R.drawable.ship, orientationData);
+        player = new Player(this,getResources(),540,1688,R.drawable.ship, orientationData);
 
         enemies.add(new Enemy(this,getResources(),xOffset, yOffset,R.drawable.invadera));
         enemies.add(new Enemy(this,getResources(),xOffset + 150, yOffset + 0,R.drawable.invadera));

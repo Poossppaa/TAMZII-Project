@@ -11,7 +11,6 @@ public class PlayerOrientationData implements SensorEventListener {
     private Sensor accelorometer;
     private Sensor magnometer;
 
-
     private float[] accelOutput;
     private float[] magOutput;
 
