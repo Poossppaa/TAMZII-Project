@@ -1,27 +1,30 @@
 package com.example.tamz2project;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import androidx.annotation.Dimension;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameView extends SurfaceView {
 
-    private List<Sprite> sprites = new ArrayList<>();
     private SurfaceHolder holder;
     private GameLoopThread gameLoopThread;
-    private long lastClick;
+    private Player player;
+    private List<Enemy> enemies = new ArrayList<>();
+    private PlayerOrientationData orientationData;
 
     public GameView(Context context) {
         super(context);
         gameLoopThread = new GameLoopThread(this);
+        orientationData = new PlayerOrientationData(getContext());
+        orientationData.register();
+
         holder = getHolder();
 
         holder.addCallback(new SurfaceHolder.Callback() {
@@ -41,7 +44,7 @@ public class GameView extends SurfaceView {
 
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                createSprites(10, 150);
+                createGameObjects(10, 150);
                 gameLoopThread.setRunning(true);
                 gameLoopThread.start();
             }
@@ -53,60 +56,28 @@ public class GameView extends SurfaceView {
         });
     }
 
-    private void createSprites(int xOffset, int yOffset){
-          sprites.add(createSprite(R.drawable.invadera, xOffset + 0, yOffset + 0));
-          sprites.add(createSprite(R.drawable.invadera, xOffset +150, yOffset + 0));
-          sprites.add(createSprite(R.drawable.invadera, xOffset +300, yOffset + 0));
+    private void createGameObjects(int xOffset, int yOffset){
+        player = new Player(this,getResources(),0,800,R.drawable.ship, orientationData);
 
-          sprites.add(createSprite(R.drawable.invaderb, xOffset +0, yOffset + 100));
-          sprites.add(createSprite(R.drawable.invaderb, xOffset +150, yOffset + 100));
-          sprites.add(createSprite(R.drawable.invaderb, xOffset +300, yOffset + 100));
+        enemies.add(new Enemy(this,getResources(),xOffset, yOffset,R.drawable.invadera));
+        enemies.add(new Enemy(this,getResources(),xOffset + 150, yOffset + 0,R.drawable.invadera));
+        enemies.add(new Enemy(this,getResources(),xOffset + 300, yOffset + 0,R.drawable.invadera));
 
-          sprites.add(createSprite(R.drawable.invaderc, xOffset +0, yOffset + 200));
-          sprites.add(createSprite(R.drawable.invaderc, xOffset +150, yOffset + 200));
-          sprites.add(createSprite(R.drawable.invaderc, xOffset +300, yOffset + 200));
+        enemies.add(new Enemy(this,getResources(),0, yOffset + 100,R.drawable.invaderb));
+        enemies.add(new Enemy(this,getResources(),xOffset + 150, yOffset + 100,R.drawable.invaderb));
+        enemies.add(new Enemy(this,getResources(),xOffset + 300, yOffset + 100,R.drawable.invaderb));
 
-          //player
-          sprites.add(createLargeSprite(R.drawable.ship,xOffset +0, yOffset + 400));
-    }
-
-    private Sprite createSprite(int resources, int initialX, int initialY) {
-        BitmapFactory.Options bmo = new BitmapFactory.Options();
-        bmo.inScaled = true;
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(), resources, bmo);
-        return new Sprite(this,bmp,initialX, initialY);
-    }
-
-    private LargeSprite createLargeSprite(int resources, int initialX, int initialY) {
-        BitmapFactory.Options bmo = new BitmapFactory.Options();
-        bmo.inScaled = true;
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(), resources, bmo);
-        return new LargeSprite(this,bmp,initialX, initialY);
+        enemies.add(new Enemy(this,getResources(),0, yOffset + 200,R.drawable.invaderc));
+        enemies.add(new Enemy(this,getResources(),xOffset + 150, yOffset + 200,R.drawable.invaderc));
+        enemies.add(new Enemy(this,getResources(),xOffset + 300, yOffset + 200,R.drawable.invaderc));
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(Color.BLACK);
-        for(Sprite sprite : sprites) {
-            sprite.onDraw(canvas);
+        player.draw(canvas);
+        for(Enemy enemy : enemies) {
+            enemy.draw(canvas);
         }
-    }
-
-    @Override
-
-    public boolean onTouchEvent(MotionEvent event) {
-        if (System.currentTimeMillis() - lastClick > 500) {
-            lastClick = System.currentTimeMillis();
-            synchronized (getHolder()) {
-                for (int i = sprites.size() - 1; i >= 0; i--) {
-                    Sprite sprite = sprites.get(i);
-                    if (sprite.isCollision(event.getX(), event.getY())) {
-                        sprites.remove(sprite);
-                        break;
-                    }
-                }
-            }
-        }
-        return true;
     }
 }
