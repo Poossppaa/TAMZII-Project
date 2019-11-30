@@ -3,8 +3,6 @@ package com.example.tamz2project;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.graphics.Xfermode;
-import android.util.Log;
 
 public class Player extends GameObject {
     private LargeSprite sprite;
@@ -22,6 +20,7 @@ public class Player extends GameObject {
 
     @Override
     public void draw(Canvas canvas) {
+        orientationData.newGame();
         sprite.onDraw(canvas);
         this.update();
     }
@@ -43,8 +42,8 @@ public class Player extends GameObject {
 
             float xSpeed = 2 * roll * gameView.getWidth()/260f;
 
-            x += Math.abs(xSpeed*elapsedTime) > 5 ? xSpeed*elapsedTime : 0;
-            Log.d("Xpos", " " + x);
+            x += Math.abs(xSpeed*elapsedTime) > 50 ? xSpeed*elapsedTime : 0;
+            //Log.d("Xpos", " " + x);
         }
 
         if(x < 0)

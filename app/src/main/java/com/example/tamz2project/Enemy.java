@@ -19,14 +19,15 @@ public class Enemy extends GameObject {
 
     @Override
     public void draw(Canvas canvas) {
-        sprite.onDraw(canvas);
         this.update();
+        sprite.onDraw(canvas);
     }
 
     @Override
     public void update() {
         int x = collisionBox.left;
         int y = collisionBox.top;
+
         if (x > gameView.getWidth() - sprite.getWidth() - xSpeed) {
             xSpeed = -5;
         }
@@ -34,6 +35,7 @@ public class Enemy extends GameObject {
             xSpeed = 5;
         }
         x = x + xSpeed;
+
         sprite.update(x,y);
     }
 }

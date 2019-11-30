@@ -52,8 +52,8 @@ public class PlayerOrientationData implements SensorEventListener {
             magOutput = event.values;
         if(accelOutput != null && magOutput != null){
             float[] rotationMatrix = new float[9];
-            float[] inclanationMatrix = new float[9];
-            boolean isChanged = SensorManager.getRotationMatrix(rotationMatrix, inclanationMatrix ,accelOutput,magOutput);
+            float[] inclinationMatrix = new float[9];
+            boolean isChanged = SensorManager.getRotationMatrix(rotationMatrix, inclinationMatrix ,accelOutput,magOutput);
 
             if(isChanged)
                 SensorManager.getOrientation(rotationMatrix,orientation);

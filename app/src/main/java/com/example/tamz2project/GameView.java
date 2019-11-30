@@ -6,9 +6,14 @@ import android.graphics.Color;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import androidx.annotation.Dimension;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class GameView extends SurfaceView {
@@ -18,13 +23,16 @@ public class GameView extends SurfaceView {
     private Player player;
     private List<Enemy> enemies = new ArrayList<>();
     private PlayerOrientationData orientationData;
+    private Context context;
+    private ArrayList<HashMap<String, String>> enemyCoordinates = new ArrayList<>();
+    private HashMap<String, String> m_li;
 
     public GameView(Context context) {
         super(context);
+        this.context = context;
         gameLoopThread = new GameLoopThread(this);
         orientationData = new PlayerOrientationData(getContext());
         orientationData.register();
-
         holder = getHolder();
 
         holder.addCallback(new SurfaceHolder.Callback() {
@@ -44,32 +52,79 @@ public class GameView extends SurfaceView {
 
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                createGameObjects(10, 150);
+                createGameObjects();
                 gameLoopThread.setRunning(true);
                 gameLoopThread.start();
             }
 
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
             }
         });
     }
 
-    private void createGameObjects(int xOffset, int yOffset){
-        player = new Player(this,getResources(),540,1688,R.drawable.ship, orientationData);
+    private void createGameObjects() {
+        try {
+            JSONObject obj = new JSONObject(loadJSONFromAssets());
+            JSONArray m_jArry = obj.getJSONArray("level");
 
-        enemies.add(new Enemy(this,getResources(),xOffset, yOffset,R.drawable.invadera));
-        enemies.add(new Enemy(this,getResources(),xOffset + 150, yOffset + 0,R.drawable.invadera));
-        enemies.add(new Enemy(this,getResources(),xOffset + 300, yOffset + 0,R.drawable.invadera));
+            for (int i = 0; i < m_jArry.length(); i++) {
+                JSONObject jo_inside = m_jArry.getJSONObject(i);
+                String x_coordinate = jo_inside.getString("x");
+                String y_coordinate = jo_inside.getString("y");
 
-        enemies.add(new Enemy(this,getResources(),0, yOffset + 100,R.drawable.invaderb));
-        enemies.add(new Enemy(this,getResources(),xOffset + 150, yOffset + 100,R.drawable.invaderb));
-        enemies.add(new Enemy(this,getResources(),xOffset + 300, yOffset + 100,R.drawable.invaderb));
+                //Add your values in your `ArrayList` as below:
+                m_li = new HashMap<String, String>();
+                m_li.put("x", x_coordinate);
+                m_li.put("y", y_coordinate);
 
-        enemies.add(new Enemy(this,getResources(),0, yOffset + 200,R.drawable.invaderc));
-        enemies.add(new Enemy(this,getResources(),xOffset + 150, yOffset + 200,R.drawable.invaderc));
-        enemies.add(new Enemy(this,getResources(),xOffset + 300, yOffset + 200,R.drawable.invaderc));
+                enemyCoordinates.add(m_li);
+            }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        for (HashMap<String,String> item : enemyCoordinates){
+            int xOrigin = Integer.parseInt(item.get("x"));
+            int yOrigin = Integer.parseInt(item.get("y"));
+
+            switch(yOrigin){
+                case 200 : {
+                    enemies.add(new Enemy(this, getResources(),xOrigin,yOrigin, R.drawable.invadera));
+                    break;
+                }
+                case 300 : {
+                    enemies.add(new Enemy(this, getResources(),xOrigin,yOrigin, R.drawable.invaderb));
+                    break;
+                }
+                case 400 : {
+                    enemies.add(new Enemy(this, getResources(),xOrigin,yOrigin, R.drawable.invaderc));
+                    break;
+
+                }
+            }
+        }
+
+        player = new Player(this, getResources(), (this.getWidth() / 2) - 79, this.getHeight() - 84, R.drawable.ship, orientationData);
+
+    }
+
+    public String loadJSONFromAssets() {
+        String json = null;
+        try {
+            InputStream is = context.getAssets().open("level1.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
     }
 
     @Override

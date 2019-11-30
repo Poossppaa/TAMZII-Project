@@ -20,9 +20,11 @@ public abstract class GameObject {
     public Rect getCollisionBox(){
         return this.collisionBox;
     }
+
     public boolean collideWith(GameObject sec){
         return sec.getCollisionBox().intersect(this.collisionBox);
     }
+
     public abstract void draw(Canvas canvas);
     public abstract void update();
 

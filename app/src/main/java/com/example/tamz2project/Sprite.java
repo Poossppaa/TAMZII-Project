@@ -33,7 +33,7 @@ public class Sprite {
         currentFrame = ++currentFrame % BMP_COLUMNS;
     }
 
-    //updates game board
+    //animates sprite
     public void onDraw(Canvas canvas) {
         int srcX = currentFrame * width;
         int srcY = 0;
