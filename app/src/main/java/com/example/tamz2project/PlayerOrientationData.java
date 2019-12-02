@@ -23,9 +23,7 @@ public class PlayerOrientationData implements SensorEventListener {
         this.magnometer = manager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
     }
 
-    public float[] getStartOrientation() {
-        return startOrientation;
-    }
+    public float[] getStartOrientation() { return startOrientation; }
 
     public void register(){
         manager.registerListener(this,accelorometer, SensorManager.SENSOR_DELAY_GAME);

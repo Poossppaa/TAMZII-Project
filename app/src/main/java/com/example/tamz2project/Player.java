@@ -14,13 +14,12 @@ public class Player extends GameObject {
     public Player(GameView gameView, Resources resources, int x,int y, int resID, PlayerOrientationData orientationData) {
         super(gameView, 5, resources);
         this.sprite = this.createLargeSprite(resID,x,y);
-        collisionBox = sprite.getCollisionBoxFromSprite();
+        collisionBox = this.sprite.getCollisionBoxFromSprite();
         this.orientationData = orientationData;
     }
 
     @Override
     public void draw(Canvas canvas) {
-        orientationData.newGame();
         sprite.onDraw(canvas);
         this.update();
     }
@@ -41,9 +40,7 @@ public class Player extends GameObject {
             float roll = orientationData.getOrientation()[2] - orientationData.getStartOrientation()[2];
 
             float xSpeed = 2 * roll * gameView.getWidth()/260f;
-
-            x += Math.abs(xSpeed*elapsedTime) > 50 ? xSpeed*elapsedTime : 0;
-            //Log.d("Xpos", " " + x);
+            x += Math.abs(xSpeed*elapsedTime) > 5 ? xSpeed*elapsedTime : 0;
         }
 
         if(x < 0)

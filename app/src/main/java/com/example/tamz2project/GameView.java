@@ -26,6 +26,7 @@ public class GameView extends SurfaceView {
     private Context context;
     private ArrayList<HashMap<String, String>> enemyCoordinates = new ArrayList<>();
     private HashMap<String, String> m_li;
+    private EnemyFormation enemyFormation;
 
     public GameView(Context context) {
         super(context);
@@ -102,13 +103,10 @@ public class GameView extends SurfaceView {
                 case 400 : {
                     enemies.add(new Enemy(this, getResources(),xOrigin,yOrigin, R.drawable.invaderc));
                     break;
-
                 }
             }
         }
-
         player = new Player(this, getResources(), (this.getWidth() / 2) - 79, this.getHeight() - 84, R.drawable.ship, orientationData);
-
     }
 
     public String loadJSONFromAssets() {

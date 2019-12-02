@@ -9,7 +9,7 @@ import android.graphics.Rect;
 public abstract class GameObject {
     protected GameView gameView;
     protected Rect collisionBox;
-    protected int xSpeed = 5;
+    protected int xSpeed;
     protected Resources res;
 
     public GameObject(GameView gameView, int xSpeed, Resources res) {
@@ -17,6 +17,7 @@ public abstract class GameObject {
         this.gameView = gameView;
         this.xSpeed = xSpeed;
     }
+
     public Rect getCollisionBox(){
         return this.collisionBox;
     }

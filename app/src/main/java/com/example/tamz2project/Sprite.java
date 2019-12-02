@@ -7,25 +7,33 @@ import android.graphics.Rect;
 public class Sprite {
     private static final int BMP_ROWS = 1;
     private static final int BMP_COLUMNS = 2;
-    private int x = 0;
-    private int y = 0;
-    private Bitmap bmp;
-    private int currentFrame = 0;
+    private int x;
+    private int y;
     private int width;
     private int height;
+    private Bitmap bmp;
+    private int currentFrame = 0;
 
     // constructor enemies
     public Sprite(Bitmap bmp, int initialX, int initialY) {
         this.bmp = bmp;
-        this.width = bmp.getWidth() / BMP_COLUMNS;
-        this.height = bmp.getHeight() / BMP_ROWS;
         this.x = initialX;
         this.y = initialY;
+        this.width = bmp.getWidth() / BMP_COLUMNS;
+        this.height = bmp.getHeight() / BMP_ROWS;
     }
 
     public int getWidth(){
         return this.width;
     }
+
+    public int getHeight() { return this.height; }
+
+    public int getX(){
+        return this.x;
+    }
+
+    public int getY(){ return this.y; }
 
     public void update(int x, int y) {
         this.x = x;
@@ -47,7 +55,7 @@ public class Sprite {
     }
 
     public Rect getCollisionBoxFromSprite(){
-        Rect dst = new Rect(x, y, x + width, y + height);
-        return dst;
+        Rect collisionBox = new Rect(x, y, width, height);
+        return collisionBox;
     }
 }

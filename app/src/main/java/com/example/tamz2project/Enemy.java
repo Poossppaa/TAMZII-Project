@@ -9,13 +9,24 @@ public class Enemy extends GameObject {
     private Rect collisionBox;
     private int xSpeed = 5;
     private GameView gameView;
+    private int x;
+    private int y;
+    private int initialX;
+    private int initialY;
 
     public Enemy(GameView gameView, Resources resources, int x, int y, int resID) {
         super(gameView, 5, resources);
         this.gameView = gameView;
         this.sprite =  this.createSprite(resID,x,y);
-        collisionBox = sprite.getCollisionBoxFromSprite();
+        this.x = sprite.getX();
+        this.y = sprite.getY();
+        this.initialX = x;
+        this.initialY = y;
+        collisionBox = this.sprite.getCollisionBoxFromSprite();
     }
+
+    public int getX(){ return this.x; }
+    public int getY(){ return this.y; }
 
     @Override
     public void draw(Canvas canvas) {
@@ -25,17 +36,16 @@ public class Enemy extends GameObject {
 
     @Override
     public void update() {
-        int x = collisionBox.left;
-        int y = collisionBox.top;
+        int x = sprite.getX();
+        int y = sprite.getY();
 
-        if (x > gameView.getWidth() - sprite.getWidth() - xSpeed) {
+        if (x > initialX - sprite.getWidth() + 200 ) { // x + gameView.getWidth() - sprite.getWidth()-150 - xSpeed
             xSpeed = -5;
         }
-        if (x + xSpeed < 0) {
+        if (x < initialX - sprite.getWidth() + 100) {
             xSpeed = 5;
         }
         x = x + xSpeed;
-
         sprite.update(x,y);
     }
 }
