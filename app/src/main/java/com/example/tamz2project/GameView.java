@@ -1,10 +1,14 @@
 package com.example.tamz2project;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,6 +19,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 public class GameView extends SurfaceView {
 
@@ -26,7 +32,7 @@ public class GameView extends SurfaceView {
     private Context context;
     private ArrayList<HashMap<String, String>> enemyCoordinates = new ArrayList<>();
     private HashMap<String, String> m_li;
-    private EnemyFormation enemyFormation;
+    private List<Projectile> projectiles = new ArrayList<>();
 
     public GameView(Context context) {
         super(context);
@@ -106,6 +112,7 @@ public class GameView extends SurfaceView {
                 }
             }
         }
+
         player = new Player(this, getResources(), (this.getWidth() / 2) - 79, this.getHeight() - 84, R.drawable.ship, orientationData);
     }
 
@@ -129,8 +136,51 @@ public class GameView extends SurfaceView {
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(Color.BLACK);
         player.draw(canvas);
+
+        List<Projectile> toRemove = new ArrayList<>();
+        List<Enemy> enemiesToRemove = new ArrayList<>();
+
+        if(projectiles.size() != 0 && enemies.size() != 0){
+            for(Enemy enemy : enemies){
+                if(enemy != null){
+                    for(Projectile projectile : projectiles){
+                        if(projectile != null){
+                            if(projectile.collideWith(enemy.getCollisionBox())) {
+                                enemiesToRemove.add(enemy);
+                                toRemove.add(projectile);
+                                new Enemy(this, getResources(),enemy.collisionBox.left,enemy.collisionBox.top, R.drawable.blockfull).draw(canvas);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         for(Enemy enemy : enemies) {
             enemy.draw(canvas);
         }
+
+        for(Projectile projectile : projectiles) {
+            if(projectile.getY() > this.getHeight()){
+                toRemove.add(projectile);
+            }
+            else{
+                projectile.draw(canvas);
+            }
+        }
+
+        projectiles.removeAll(toRemove);
+        enemies.removeAll(enemiesToRemove);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        switch(event.getAction()) {
+            case MotionEvent.ACTION_DOWN:{
+                projectiles.add(new Projectile(this,getResources(),player.getXForProjectile(),player.getYForProjectile(), R.drawable.bullet));
+            }
+            return true;
+        }
+        return false;
     }
 }

@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
+import androidx.annotation.NonNull;
+
 public abstract class GameObject {
     protected GameView gameView;
     protected Rect collisionBox;
@@ -22,8 +24,9 @@ public abstract class GameObject {
         return this.collisionBox;
     }
 
-    public boolean collideWith(GameObject sec){
-        return sec.getCollisionBox().intersect(this.collisionBox);
+    @NonNull
+    public boolean collideWith(Rect collisionBox){
+        return collisionBox.intersect(this.collisionBox);
     }
 
     public abstract void draw(Canvas canvas);

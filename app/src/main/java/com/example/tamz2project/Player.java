@@ -6,7 +6,6 @@ import android.graphics.Rect;
 
 public class Player extends GameObject {
     private LargeSprite sprite;
-    private Rect collisionBox;
     private PlayerOrientationData orientationData;
     private long frameTime;
     public static long INIT_TIME;
@@ -24,6 +23,12 @@ public class Player extends GameObject {
         this.update();
     }
 
+    public int getXForProjectile(){
+        return this.collisionBox.left + sprite.getWidth()/2-3;
+    }
+
+    public int getYForProjectile(){ return this.collisionBox.top - 45; }
+
     @Override
     public void update() {
         int x = collisionBox.left;
@@ -39,7 +44,7 @@ public class Player extends GameObject {
             float pitch = orientationData.getOrientation()[1] - orientationData.getStartOrientation()[1];
             float roll = orientationData.getOrientation()[2] - orientationData.getStartOrientation()[2];
 
-            float xSpeed = 2 * roll * gameView.getWidth()/260f;
+            float xSpeed = 2 * roll * gameView.getWidth()/1000f;
             x += Math.abs(xSpeed*elapsedTime) > 5 ? xSpeed*elapsedTime : 0;
         }
 
@@ -47,6 +52,11 @@ public class Player extends GameObject {
             x = 0;
         else if(x + sprite.getWidth() > gameView.getWidth())
             x = gameView.getWidth()-sprite.getWidth();
+
+        this.collisionBox.left = x;
+        this.collisionBox.top = y;
+        this.collisionBox.right = x + sprite.getWidth();
+        this.collisionBox.bottom = y + sprite.getHeight();
 
         sprite.update(x,y);
     }

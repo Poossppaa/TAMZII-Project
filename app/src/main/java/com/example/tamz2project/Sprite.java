@@ -55,7 +55,7 @@ public class Sprite {
     }
 
     public Rect getCollisionBoxFromSprite(){
-        Rect collisionBox = new Rect(x, y, width, height);
+        Rect collisionBox = new Rect(x, y,x + width, y + height);
         return collisionBox;
     }
 }

@@ -16,7 +16,6 @@ public class LargeSprite extends Sprite {
 
     public LargeSprite(Bitmap bmp, int initialX, int initialY) {
         super(bmp, initialX, initialY);
-
         this.bmp = bmp;
         this.width = bmp.getWidth();
         this.height = bmp.getHeight();
