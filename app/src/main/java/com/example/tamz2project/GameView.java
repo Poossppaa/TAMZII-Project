@@ -1,9 +1,11 @@
 package com.example.tamz2project;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -21,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class GameView extends SurfaceView {
-
     private SurfaceHolder holder;
     private GameLoopThread gameLoopThread;
     private Player player;
@@ -31,12 +32,12 @@ public class GameView extends SurfaceView {
     private ArrayList<HashMap<String, String>> enemyCoordinates = new ArrayList<>();
     private HashMap<String, String> m_li;
     private List<Projectile> projectiles = new ArrayList<>();
-    private String gameLevel = "level1.json";
+    private String gameLevel = "";
     private SoundPool soundPool = new SoundPool(5,AudioManager.STREAM_MUSIC,0);
     private int shootSound = soundPool.load(getContext(),R.raw.shoot,1);
     private int explosionSound = soundPool.load(getContext(),R.raw.explosion,1);
 
-    public GameView(Context context) {
+    public GameView(Context context, String level) {
         super(context);
         this.context = context;
         gameLoopThread = new GameLoopThread(this);
@@ -44,7 +45,11 @@ public class GameView extends SurfaceView {
         orientationData.register();
         holder = getHolder();
 
+        this.gameLevel = level;
 
+        MediaPlayer mediaPlayer = MediaPlayer.create(getContext(), R.raw.levelmusic);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
 
         holder.addCallback(new SurfaceHolder.Callback() {
 
@@ -76,7 +81,7 @@ public class GameView extends SurfaceView {
 
     private void createGameObjects(String gameLevel) {
         try {
-            JSONObject obj = new JSONObject(loadJSONFromAssets(gameLevel));
+            JSONObject obj = new JSONObject(loadJSONFromAssets(gameLevel+".json"));
             JSONArray m_jArry = obj.getJSONArray("level");
 
             for (int i = 0; i < m_jArry.length(); i++) {
