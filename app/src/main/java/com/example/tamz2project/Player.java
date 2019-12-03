@@ -2,6 +2,8 @@ package com.example.tamz2project;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 
 public class Player extends GameObject {
@@ -19,8 +21,12 @@ public class Player extends GameObject {
 
     @Override
     public void draw(Canvas canvas) {
-        sprite.onDraw(canvas);
         this.update();
+        sprite.onDraw(canvas);
+//        Paint paint = new Paint();
+//        paint.setColor(Color.RED);
+//        paint.setStyle(Paint.Style.STROKE);
+//        canvas.drawRect(this.collisionBox,paint);
     }
 
     public int getXForProjectile(){

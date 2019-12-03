@@ -1,14 +1,14 @@
 package com.example.tamz2project;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Rect;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,8 +19,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 
 public class GameView extends SurfaceView {
 
@@ -33,6 +31,10 @@ public class GameView extends SurfaceView {
     private ArrayList<HashMap<String, String>> enemyCoordinates = new ArrayList<>();
     private HashMap<String, String> m_li;
     private List<Projectile> projectiles = new ArrayList<>();
+    private String gameLevel = "level1.json";
+    private SoundPool soundPool = new SoundPool(5,AudioManager.STREAM_MUSIC,0);
+    private int shootSound = soundPool.load(getContext(),R.raw.shoot,1);
+    private int explosionSound = soundPool.load(getContext(),R.raw.explosion,1);
 
     public GameView(Context context) {
         super(context);
@@ -41,6 +43,8 @@ public class GameView extends SurfaceView {
         orientationData = new PlayerOrientationData(getContext());
         orientationData.register();
         holder = getHolder();
+
+
 
         holder.addCallback(new SurfaceHolder.Callback() {
 
@@ -59,7 +63,7 @@ public class GameView extends SurfaceView {
 
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                createGameObjects();
+                createGameObjects(gameLevel);
                 gameLoopThread.setRunning(true);
                 gameLoopThread.start();
             }
@@ -70,9 +74,9 @@ public class GameView extends SurfaceView {
         });
     }
 
-    private void createGameObjects() {
+    private void createGameObjects(String gameLevel) {
         try {
-            JSONObject obj = new JSONObject(loadJSONFromAssets());
+            JSONObject obj = new JSONObject(loadJSONFromAssets(gameLevel));
             JSONArray m_jArry = obj.getJSONArray("level");
 
             for (int i = 0; i < m_jArry.length(); i++) {
@@ -116,10 +120,10 @@ public class GameView extends SurfaceView {
         player = new Player(this, getResources(), (this.getWidth() / 2) - 79, this.getHeight() - 84, R.drawable.ship, orientationData);
     }
 
-    public String loadJSONFromAssets() {
+    public String loadJSONFromAssets(String fileName) {
         String json = null;
         try {
-            InputStream is = context.getAssets().open("level1.json");
+            InputStream is = context.getAssets().open(fileName);
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -145,10 +149,11 @@ public class GameView extends SurfaceView {
                 if(enemy != null){
                     for(Projectile projectile : projectiles){
                         if(projectile != null){
-                            if(projectile.collideWith(enemy.getCollisionBox())) {
+                            if(projectile.collideWith(enemy.getCollisionBox())&& projectile.isSourcePlayer()) {
                                 enemiesToRemove.add(enemy);
                                 toRemove.add(projectile);
-                                new Enemy(this, getResources(),enemy.collisionBox.left,enemy.collisionBox.top, R.drawable.blockfull).draw(canvas);
+                                soundPool.play(explosionSound, 1, 1, 1, 0, 1);
+                                new Enemy(this, getResources(),enemy.getX(),enemy.getY(), R.drawable.explosion).draw(canvas);
                             }
                         }
                     }
@@ -158,6 +163,23 @@ public class GameView extends SurfaceView {
 
         for(Enemy enemy : enemies) {
             enemy.draw(canvas);
+            int random = (int) (Math.random()*((1000-1)+1))+1;
+            if(random < 3){
+                soundPool.play(shootSound, 1, 1, 1, 0, 1);
+                projectiles.add(new Projectile(this,getResources(),enemy.getXForProjectile(),enemy.getYForProjectile(), R.drawable.bullet, false));
+            }
+        }
+
+        if(player != null){
+            for(Projectile projectile : projectiles){
+                if(projectile != null){
+                    if(projectile.collideWith(player.getCollisionBox())&& !projectile.isSourcePlayer()) {
+                        Log.d("player","game over");
+                        toRemove.add(projectile);
+                        // lose condition
+                    }
+                }
+            }
         }
 
         for(Projectile projectile : projectiles) {
@@ -177,7 +199,8 @@ public class GameView extends SurfaceView {
     public boolean onTouchEvent(MotionEvent event){
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:{
-                projectiles.add(new Projectile(this,getResources(),player.getXForProjectile(),player.getYForProjectile(), R.drawable.bullet));
+                soundPool.play(shootSound, 1, 1, 1, 0, 1);
+                projectiles.add(new Projectile(this,getResources(),player.getXForProjectile(),player.getYForProjectile(), R.drawable.bullet, true));
             }
             return true;
         }

@@ -12,16 +12,18 @@ public class Projectile extends GameObject {
     private int y;
     private int initialX;
     private int initialY;
+    private boolean isSourcePlayer;
 
-    public Projectile(GameView gameView, Resources resources, int x,int y, int resID) {
+    public Projectile(GameView gameView, Resources resources, int x, int y, int resID, boolean isSourcePlayer) {
         super(gameView, 5, resources);
         this.gameView = gameView;
-        this.sprite =  this.createSprite(resID,x,y);
+        this.sprite = this.createSprite(resID, x, y);
         this.x = sprite.getX();
         this.y = sprite.getY();
         this.initialX = x;
         this.initialY = y;
         collisionBox = this.sprite.getCollisionBoxFromSprite();
+        this.isSourcePlayer = isSourcePlayer;
     }
 
     @Override
@@ -30,23 +32,43 @@ public class Projectile extends GameObject {
         this.update();
     }
 
-    public int getX(){return this.x;}
-    public int getY(){return this.y;}
+    public int getX() {
+        return this.x;
+    }
+
+    public int getY() {
+        return this.y;
+    }
+
+    public boolean isSourcePlayer() {
+        return this.isSourcePlayer;
+    }
 
     @Override
     public void update() {
         int x = sprite.getX();
         int y = sprite.getY();
 
-        if (y > sprite.getHeight() + 20 ) { // x + gameView.getWidth() - sprite.getWidth()-150 - xSpeed
-            ySpeed = -20;
+        if (isSourcePlayer)
+        {
+            if (y > sprite.getHeight() + 20) { // x + gameView.getWidth() - sprite.getWidth()-150 - xSpeed
+                ySpeed = -20;
+            }
+        }
+        else
+        {
+            if (y < sprite.getHeight() - 20 ) { // x + gameView.getWidth() - sprite.getWidth()-150 - xSpeed
+                ySpeed = 20;
+            }
         }
 
         y = y + ySpeed;
+
         this.collisionBox.left = x;
         this.collisionBox.top = y;
         this.collisionBox.right = x + sprite.getWidth();
         this.collisionBox.bottom = y + sprite.getHeight();
-        sprite.update(x,y);
+
+        sprite.update(x, y);
     }
 }

@@ -13,6 +13,7 @@ public class Enemy extends GameObject {
     private int y;
     private int initialX;
     private int initialY;
+    private int Projectile;
 
     public Enemy(GameView gameView, Resources resources, int x, int y, int resID) {
         super(gameView, 5, resources);
@@ -38,12 +39,18 @@ public class Enemy extends GameObject {
 //        canvas.drawRect(this.collisionBox,paint);
     }
 
+    public int getXForProjectile(){
+        return this.collisionBox.left + sprite.getWidth()/2;
+    }
+
+    public int getYForProjectile(){ return this.collisionBox.bottom + sprite.getHeight()/2 ; }
+
     @Override
     public void update() {
         int x = sprite.getX();
         int y = sprite.getY();
 
-        if (x > initialX - sprite.getWidth() + 250 ) { // x + gameView.getWidth() - sprite.getWidth()-150 - xSpeed
+        if (x > initialX - sprite.getWidth() + 250 ) {
             xSpeed = -5;
         }
         if (x < initialX - sprite.getWidth() + 50) {
