@@ -6,9 +6,9 @@ Space Invaders je single-playerová hra, kde máte za úkol zničit všechny mim
 Úroveň obtížnosti je nsatavená podle toho jak jsou nepřátelské lodě rychlé.
 
 Použité featury:
-GUI,
+Concurrency,
 Sensors,
 Multimedia,
-Signal processing,
+Networking,
 2D Game Canvas,
-Networking
+GUI
