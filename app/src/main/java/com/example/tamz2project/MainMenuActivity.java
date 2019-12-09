@@ -9,15 +9,14 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
-public class MainMenuActivity extends AppCompatActivity {
+public class MainMenuActivity extends Activity {
 
     Context context;
     Button newGameButton;
     Button levelSelectButton;
+    ImageView splashImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +34,7 @@ public class MainMenuActivity extends AppCompatActivity {
 
         newGameButton = findViewById(R.id.newGameButton);
         levelSelectButton = findViewById(R.id.levelSelectButton);
+        splashImage = findViewById(R.id.splashImage);
 
         newGameButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -42,6 +42,20 @@ public class MainMenuActivity extends AppCompatActivity {
                 if(event.getAction() == MotionEvent.ACTION_UP){
                     Intent intent = new Intent(context, MainActivity.class);
                     intent.putExtra("level","level1");
+
+                    startActivity(intent);
+                    mediaPlayer.stop();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        levelSelectButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    Intent intent = new Intent(context, LevelSelectActivity.class);
 
                     startActivity(intent);
                     mediaPlayer.stop();

@@ -81,7 +81,7 @@ public class GameView extends SurfaceView {
 
     private void createGameObjects(String gameLevel) {
         try {
-            JSONObject obj = new JSONObject(loadJSONFromAssets(gameLevel+".json"));
+            JSONObject obj = new JSONObject(loadJSONFromAssets("json/"+gameLevel));
             JSONArray m_jArry = obj.getJSONArray("level");
 
             for (int i = 0; i < m_jArry.length(); i++) {
