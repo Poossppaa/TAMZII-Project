@@ -41,7 +41,7 @@ public class MainMenuActivity extends Activity {
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_UP){
                     Intent intent = new Intent(context, MainActivity.class);
-                    intent.putExtra("level","level1");
+                    intent.putExtra("level","level1.json");
 
                     startActivity(intent);
                     mediaPlayer.stop();

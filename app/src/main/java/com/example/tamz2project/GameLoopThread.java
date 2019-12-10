@@ -1,5 +1,6 @@
 package com.example.tamz2project;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Canvas;
 
 public class GameLoopThread extends Thread {

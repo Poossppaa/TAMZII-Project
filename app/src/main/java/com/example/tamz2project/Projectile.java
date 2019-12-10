@@ -2,6 +2,8 @@ package com.example.tamz2project;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 
 public class Projectile extends GameObject {
@@ -28,8 +30,12 @@ public class Projectile extends GameObject {
 
     @Override
     public void draw(Canvas canvas) {
-        sprite.onDraw(canvas);
         this.update();
+        sprite.onDraw(canvas);
+//        Paint paint = new Paint();
+//        paint.setColor(Color.RED);
+//        paint.setStyle(Paint.Style.STROKE);
+//        canvas.drawRect(this.collisionBox,paint);
     }
 
     public int getX() {
@@ -58,7 +64,7 @@ public class Projectile extends GameObject {
         else
         {
             if (y < sprite.getHeight() - 20 ) { // x + gameView.getWidth() - sprite.getWidth()-150 - xSpeed
-                ySpeed = 20;
+                ySpeed = 40;
             }
         }
 

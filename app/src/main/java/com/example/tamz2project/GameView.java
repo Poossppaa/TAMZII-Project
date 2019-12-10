@@ -1,7 +1,7 @@
 package com.example.tamz2project;
 
-import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.media.AudioManager;
@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,12 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 
 public class GameView extends SurfaceView {
-    private SurfaceHolder holder;
+    private final SurfaceHolder holder;
     private GameLoopThread gameLoopThread;
     private Player player;
     private List<Enemy> enemies = new ArrayList<>();
     private PlayerOrientationData orientationData;
     private Context context;
+    private Runnable starter;
     private ArrayList<HashMap<String, String>> enemyCoordinates = new ArrayList<>();
     private HashMap<String, String> m_li;
     private List<Projectile> projectiles = new ArrayList<>();
@@ -36,18 +38,22 @@ public class GameView extends SurfaceView {
     private SoundPool soundPool = new SoundPool(5,AudioManager.STREAM_MUSIC,0);
     private int shootSound = soundPool.load(getContext(),R.raw.shoot,1);
     private int explosionSound = soundPool.load(getContext(),R.raw.explosion,1);
+    private long timeStamp;
+    final private  MediaPlayer mediaPlayer;
 
-    public GameView(Context context, String level) {
+    public GameView(Context context, String level, Runnable runnable) {
         super(context);
         this.context = context;
+        starter = runnable;
         gameLoopThread = new GameLoopThread(this);
         orientationData = new PlayerOrientationData(getContext());
         orientationData.register();
         holder = getHolder();
+        timeStamp = 0;
 
         this.gameLevel = level;
 
-        MediaPlayer mediaPlayer = MediaPlayer.create(getContext(), R.raw.levelmusic);
+        mediaPlayer = MediaPlayer.create(getContext(), R.raw.levelmusic);
         mediaPlayer.setLooping(true);
         mediaPlayer.start();
 
@@ -169,21 +175,9 @@ public class GameView extends SurfaceView {
         for(Enemy enemy : enemies) {
             enemy.draw(canvas);
             int random = (int) (Math.random()*((1000-1)+1))+1;
-            if(random < 3){
+            if(random < 5){
                 soundPool.play(shootSound, 1, 1, 1, 0, 1);
                 projectiles.add(new Projectile(this,getResources(),enemy.getXForProjectile(),enemy.getYForProjectile(), R.drawable.bullet, false));
-            }
-        }
-
-        if(player != null){
-            for(Projectile projectile : projectiles){
-                if(projectile != null){
-                    if(projectile.collideWith(player.getCollisionBox())&& !projectile.isSourcePlayer()) {
-                        Log.d("player","game over");
-                        toRemove.add(projectile);
-                        // lose condition
-                    }
-                }
             }
         }
 
@@ -198,14 +192,34 @@ public class GameView extends SurfaceView {
 
         projectiles.removeAll(toRemove);
         enemies.removeAll(enemiesToRemove);
+
+        if(player != null){
+            for(Projectile projectile : projectiles){
+                if(projectile != null){
+                    if(projectile.collideWith(player.getCollisionBox())&& !projectile.isSourcePlayer()) {
+                        Log.d("player","game over");
+                        toRemove.add(projectile);
+                        new Enemy(this, getResources(),player.getXForProjectile(),player.getYForProjectile(), R.drawable.explosion).draw(canvas);
+                        // lose condition
+                        gameLoopThread.setRunning(false);
+                        mediaPlayer.stop();
+                        starter.run();
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:{
-                soundPool.play(shootSound, 1, 1, 1, 0, 1);
-                projectiles.add(new Projectile(this,getResources(),player.getXForProjectile(),player.getYForProjectile(), R.drawable.bullet, true));
+                if(System.currentTimeMillis() >= timeStamp + 1000){
+                    soundPool.play(shootSound, 1, 1, 1, 0, 1);
+                    projectiles.add(new Projectile(this,getResources(),player.getXForProjectile(),player.getYForProjectile(), R.drawable.bullet, true));
+                    timeStamp = System.currentTimeMillis();
+                }
             }
             return true;
         }
