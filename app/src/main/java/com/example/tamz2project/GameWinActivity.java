@@ -10,16 +10,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class GameOverScreenActivity extends Activity {
+public class GameWinActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_game_over_screen);
+        setContentView(R.layout.activity_game_win);
 
-        final MediaPlayer mediaPlayer = MediaPlayer.create(this.getApplicationContext(),R.raw.gameovermusic);
+
+        final MediaPlayer mediaPlayer = MediaPlayer.create(this.getApplicationContext(),R.raw.victorysound);
         mediaPlayer.setLooping(true);
         mediaPlayer.start();
 
@@ -28,8 +29,8 @@ public class GameOverScreenActivity extends Activity {
         final Future handler = executor.submit(new Callable() {
             @Override
             public String call() throws Exception {
-                Thread.sleep(5000);
-                Intent intent = new Intent(GameOverScreenActivity.this.getApplicationContext(), MainMenuActivity.class);
+                Thread.sleep(2000);
+                Intent intent = new Intent(GameWinActivity.this.getApplicationContext(), MainMenuActivity.class);
                 mediaPlayer.stop();
                 startActivity(intent);
                 return "";

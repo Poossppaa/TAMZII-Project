@@ -24,6 +24,12 @@ public class MainActivity extends Activity {
                 Intent intent = new Intent(MainActivity.this, GameOverScreenActivity.class);
                 startActivity(intent);
             }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(MainActivity.this, GameWinActivity.class);
+                startActivity(intent);
+            }
         }));
     }
 }

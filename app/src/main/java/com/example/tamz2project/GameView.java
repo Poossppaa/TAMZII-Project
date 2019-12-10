@@ -30,7 +30,8 @@ public class GameView extends SurfaceView {
     private List<Enemy> enemies = new ArrayList<>();
     private PlayerOrientationData orientationData;
     private Context context;
-    private Runnable starter;
+    private Runnable runnableLoseScreen;
+    private Runnable runnableWinScreen;
     private ArrayList<HashMap<String, String>> enemyCoordinates = new ArrayList<>();
     private HashMap<String, String> m_li;
     private List<Projectile> projectiles = new ArrayList<>();
@@ -41,10 +42,11 @@ public class GameView extends SurfaceView {
     private long timeStamp;
     final private  MediaPlayer mediaPlayer;
 
-    public GameView(Context context, String level, Runnable runnable) {
+    public GameView(Context context, String level, Runnable loseScreen, Runnable winScreen) {
         super(context);
         this.context = context;
-        starter = runnable;
+        runnableLoseScreen = loseScreen;
+        runnableWinScreen = winScreen;
         gameLoopThread = new GameLoopThread(this);
         orientationData = new PlayerOrientationData(getContext());
         orientationData.register();
@@ -172,14 +174,23 @@ public class GameView extends SurfaceView {
             }
         }
 
-        for(Enemy enemy : enemies) {
-            enemy.draw(canvas);
-            int random = (int) (Math.random()*((1000-1)+1))+1;
-            if(random < 5){
-                soundPool.play(shootSound, 1, 1, 1, 0, 1);
-                projectiles.add(new Projectile(this,getResources(),enemy.getXForProjectile(),enemy.getYForProjectile(), R.drawable.bullet, false));
+        if(enemies.size() != 0){
+            for(Enemy enemy : enemies) {
+                enemy.draw(canvas);
+                int random = (int) (Math.random()*((1000-1)+1))+1;
+                if(random < 5){
+                    soundPool.play(shootSound, 1, 1, 1, 0, 1);
+                    projectiles.add(new Projectile(this,getResources(),enemy.getXForProjectile(),enemy.getYForProjectile(), R.drawable.bullet, false));
+                }
             }
         }
+        else{
+            gameLoopThread.setRunning(false);
+            mediaPlayer.stop();
+            runnableWinScreen.run();
+            return;
+        }
+
 
         for(Projectile projectile : projectiles) {
             if(projectile.getY() > this.getHeight()){
@@ -197,13 +208,12 @@ public class GameView extends SurfaceView {
             for(Projectile projectile : projectiles){
                 if(projectile != null){
                     if(projectile.collideWith(player.getCollisionBox())&& !projectile.isSourcePlayer()) {
-                        Log.d("player","game over");
                         toRemove.add(projectile);
                         new Enemy(this, getResources(),player.getXForProjectile(),player.getYForProjectile(), R.drawable.explosion).draw(canvas);
-                        // lose condition
+                        soundPool.play(explosionSound, 1, 1, 1, 0, 1);
                         gameLoopThread.setRunning(false);
                         mediaPlayer.stop();
-                        starter.run();
+                        runnableLoseScreen.run();
                         return;
                     }
                 }

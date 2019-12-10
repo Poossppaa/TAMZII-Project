@@ -8,7 +8,7 @@ import android.graphics.Rect;
 
 public class Projectile extends GameObject {
     private Sprite sprite;
-    private int ySpeed = 5;
+    private int ySpeed = 20;
     private GameView gameView;
     private int x;
     private int y;
@@ -64,7 +64,7 @@ public class Projectile extends GameObject {
         else
         {
             if (y < sprite.getHeight() - 20 ) { // x + gameView.getWidth() - sprite.getWidth()-150 - xSpeed
-                ySpeed = 40;
+                ySpeed = 20;
             }
         }
 
